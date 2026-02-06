@@ -1,0 +1,195 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+\title{Discrete-Event Simulation of Stochastic Inventory Control Policies for Retail Supply Chains}
+
+\author{
+Jasper Zheng \\
+CS 4632 -- Modeling and Simulation \\
+Instructor: Christopher Regan \\
+\date{\today}
+}
+
+\begin{document}
+
+\maketitle
+\newpage
+\section{Project Overview}
+
+\subsection{Project Title}
+Discrete-Event Simulation of Stochastic Inventory Control Policies for Retail Supply Chains
+
+\subsection{Domain}
+Retail supply chain and inventory management systems.
+
+\subsection{Problem Statement}
+Retailers must manage inventory under uncertain customer demand and variable supplier lead times. Poor inventory policies can lead to excessive holding costs or frequent stock outs, reducing service levels, and increasing operational expenses.  
+This simulation aims to evaluate and compare different inventory control policies, such as the $(s,S)$ policy and Economic Order Quantity (EOQ), to determine which strategies minimize total cost while maintaining high service levels under stochastic conditions.
+
+\subsection{Scope}
+
+\textbf{Included in simulation:}
+\begin{itemize}
+    \item Single retail store and single supplier/warehouse
+    \item Stochastic customer demand
+    \item Inventory Resupply policies
+    \item Random lead times for shipments
+    \item Cost tracking (holding, shortage, ordering)
+\end{itemize}
+
+\textbf{Excluded from simulation:}
+\begin{itemize}
+    \item Transportation routing optimization
+    \item Pricing or marketing effects
+    \item Multiple product types
+    \item Detailed financial accounting
+\end{itemize}
+
+\section{System Description}
+\subsection{System Components}
+
+The simulation consists of the following primary entities:
+
+\begin{itemize}
+    \item \textbf{Store:} Maintains inventory, fulfills customer demand, and places replenishment orders.
+    \item \textbf{Supplier/Warehouse:} Receives orders and ships inventory after a lead time.
+    \item \textbf{Inventory Policy:} Determines when and how much to reorder.
+    \item \textbf{Order/Shipment:} Represents replenishment transactions.
+    \item \textbf{Event Scheduler:} Manages discrete events such as demand arrivals and shipment arrivals.
+\end{itemize}
+
+\subsection{System Dynamics}
+
+The system evolves using discrete events:
+
+\begin{enumerate}
+    \item Customers generate stochastic demand that reduces store inventory.
+    \item If inventory is insufficient, a stockout or lost sale occurs.
+    \item When inventory falls below a reorder threshold, the store places an order.
+    \item After a stochastic lead time, the shipment arrives and inventory increases.
+    \item Costs and performance metrics are recorded continuously.
+\end{enumerate}
+
+\subsection{Core Models and Algorithms}
+\textbf{1. Stochastic Demand Model}
+
+\[
+D_t \sim \text{Poisson}(\lambda)
+\]
+
+\textbf{2. $(s,S)$ Inventory Control Policy}
+
+\textbf{3. Discrete-Event Simulation}
+
+\subsection{Assumptions}
+
+\begin{itemize}
+    \item Single product type
+    \item Independent demand between time periods
+    \item Fixed cost parameters
+    \item No transportation constraints
+    \item No product expiration or spoilage
+\end{itemize}
+
+\section{Implementation Approach}
+\subsection{Programming Language}
+Python is selected due to its simplicity, strong numerical libraries, and suitability for rapid simulation development.
+
+\subsection{Development Environment}
+\begin{itemize}
+    \item NumPy for numerical computation
+    \item Matplotlib for visualization
+    \item Optional: SimPy for event scheduling
+    \item GitHub for version control
+\end{itemize}
+
+\subsection{Simulation Type}
+Discrete-event simulation.
+
+\subsection{Data Collection Plan}
+
+The simulation will record:
+
+\begin{itemize}
+    \item Total cost
+    \item Holding cost
+    \item Ordering cost
+    \item Shortage cost
+    \item Stockout rate
+    \item Service level (fill rate)
+    \item Average inventory level
+\end{itemize}
+
+These metrics will be used to compare policy performance.
+
+\section{Literature Review}
+
+\subsection{Core Models and Algorithms}
+
+A minimum of five academic or industry sources will be reviewed. For each source, the following will be discussed:
+
+\begin{itemize}
+    \item The model or algorithm presented
+    \item Its theoretical foundation
+    \item How it applies to this simulation
+    \item What adaptations will be made
+\end{itemize}
+
+\textbf{Planned topics include:}
+\begin{itemize}
+    \item $(s,S)$ inventory policies
+    \item Economic Order Quantity (EOQ)
+    \item Stochastic demand modeling
+    \item Discrete-event simulation techniques
+    \item Supply chain performance metrics
+    \end{itemize}
+
+\subsection{Core Models and Algorithms}
+
+\subsubsection{$(s,S)$ Inventory Control Policy}
+
+The $(s,S)$ inventory control policy is a continuous-review replenishment strategy in which an order is placed whenever the inventory level falls below a threshold $s$, and the order quantity is sufficient to raise inventory up to level $S$ \cite{silver_inventory}. This policy balances holding costs and shortage costs under stochastic demand, ensuring that the store maintains sufficient stock while minimizing excessive inventory. In this simulation, the $(s,S)$ policy will be implemented as the main replenishment logic for the retail store.
+
+\subsubsection{Lead Time Uncertainty Modeling}
+
+Supplier lead times are inherently variable due to factors such as production delays, shipping disruptions, and logistics inefficiencies \cite{zipkin_inventory}. In the simulation, lead time will be modeled as a random variable drawn from a probability distribution (e.g., Normal or Uniform) to reflect these uncertainties. Incorporating stochastic lead times allows the simulation to capture realistic inventory fluctuations and the potential for stockouts.
+
+\subsubsection{Stochastic Demand Modeling}
+
+Customer demand is uncertain and can vary daily. In this simulation, demand will be modeled using probability distributions such as Poisson or Normal to represent random customer arrivals \cite{nahmias_production}. This stochastic modeling introduces variability into the system, affecting inventory levels and the timing of replenishment events. It ensures that the simulation realistically represents real-world demand patterns.
+
+\subsubsection{Discrete-Event Simulation}
+
+The simulation uses a discrete-event approach, in which the system state changes only at discrete points in time when events occur, such as customer demand arrivals or shipment deliveries \cite{law_simulation}. An event queue manages all scheduled events, and the simulation clock advances to the next event rather than using fixed time steps. This methodology improves computational efficiency and accurately models the temporal dynamics of the supply chain system.
+
+\subsubsection{Inventory Performance Metrics}
+
+To evaluate the effectiveness of the inventory policies, several performance metrics will be collected \cite{chopra_supplychain}:
+
+
+\section{UML Diagrams}
+
+\subsection{Class Diagram}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{docs/class_diagram.png}
+    \caption{Class Diagram of Inventory Simulation}
+    \label{fig:class_diagram}
+\end{figure}
+
+\subsection{Activity Diagram}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{docs/activity_diagram.png}
+    \caption{Activity Diagram showing the main simulation flow}
+    \label{fig:activity_diagram}
+\end{figure}
+\section{Repository}
+\texttt{https://github.com/Misthallow/cs4632-inventory-simulation/tree/main}
+
+\newpage
+\bibliographystyle{IEEEtran} 
+\bibliography{references}
+\end{document}
