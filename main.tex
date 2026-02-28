@@ -72,25 +72,16 @@ The system evolves using discrete events:
     \item Costs and performance metrics are recorded continuously.
 \end{enumerate}
 
-\subsection{Core Models and Algorithms}
-\textbf{1. Stochastic Demand Model}
-
-\[
-D_t \sim \text{Poisson}(\lambda)
-\]
-
-\textbf{2. $(s,S)$ Inventory Control Policy}
-
-\textbf{3. Discrete-Event Simulation}
-
 \subsection{Assumptions}
 
 \begin{itemize}
-    \item Single product type
-    \item Independent demand between time periods
-    \item Fixed cost parameters
-    \item No transportation constraints
-    \item No product expiration or spoilage
+    \item Initial inventory $I_0 = 200$ units
+    \item Holding cost $h = 2$ dollars per unit per day
+    \item Ordering cost $K = 200$ dollars per order
+    \item Shortage cost $p = 50$ dollars per unit
+    \item Simulation duration: 365 days
+    \item Single product and single supplier
+    \item Independent daily demand
 \end{itemize}
 
 \section{Implementation Approach}
@@ -124,6 +115,31 @@ The simulation will record:
 
 These metrics will be used to compare policy performance.
 
+\subsection{Simulation Algorithm}
+
+The simulation uses an event-driven approach. The main logic is:
+
+\begin{verbatim}
+Initialize inventory I0 = 200
+Schedule first demand event
+
+while time < 365 days:
+    process next event
+    
+    if demand:
+        reduce inventory
+        record shortage if needed
+        
+        if I < s:
+            order Q = S - I
+            schedule shipment after lead time
+    
+    if shipment arrival:
+        increase inventory
+    
+    update costs
+\end{verbatim}
+
 \section{Literature Review}
 
 \subsection{Core Models and Algorithms}
@@ -148,26 +164,104 @@ A minimum of five academic or industry sources will be reviewed. For each source
 
 \subsection{Core Models and Algorithms}
 
-\subsubsection{$(s,S)$ Inventory Control Policy}
-
-The $(s,S)$ inventory control policy is a continuous-review replenishment strategy in which an order is placed whenever the inventory level falls below a threshold $s$, and the order quantity is sufficient to raise inventory up to level $S$ \cite{silver_inventory}. This policy balances holding costs and shortage costs under stochastic demand, ensuring that the store maintains sufficient stock while minimizing excessive inventory. In this simulation, the $(s,S)$ policy will be implemented as the main replenishment logic for the retail store.
-
-\subsubsection{Lead Time Uncertainty Modeling}
-
-Supplier lead times are inherently variable due to factors such as production delays, shipping disruptions, and logistics inefficiencies \cite{zipkin_inventory}. In the simulation, lead time will be modeled as a random variable drawn from a probability distribution (e.g., Normal or Uniform) to reflect these uncertainties. Incorporating stochastic lead times allows the simulation to capture realistic inventory fluctuations and the potential for stockouts.
-
 \subsubsection{Stochastic Demand Modeling}
 
-Customer demand is uncertain and can vary daily. In this simulation, demand will be modeled using probability distributions such as Poisson or Normal to represent random customer arrivals \cite{nahmias_production}. This stochastic modeling introduces variability into the system, affecting inventory levels and the timing of replenishment events. It ensures that the simulation realistically represents real-world demand patterns.
+Daily customer demand is modeled as a Poisson random variable:
 
-\subsubsection{Discrete-Event Simulation}
+\[
+D_t \sim \text{Poisson}(\lambda)
+\]
 
-The simulation uses a discrete-event approach, in which the system state changes only at discrete points in time when events occur, such as customer demand arrivals or shipment deliveries \cite{law_simulation}. An event queue manages all scheduled events, and the simulation clock advances to the next event rather than using fixed time steps. This methodology improves computational efficiency and accurately models the temporal dynamics of the supply chain system.
+The probability mass function is:
 
-\subsubsection{Inventory Performance Metrics}
+\[
+P(D=k) = \frac{\lambda^k e^{-\lambda}}{k!}
+\]
 
-To evaluate the effectiveness of the inventory policies, several performance metrics will be collected \cite{chopra_supplychain}:
+where $\lambda$ is the average demand per day.  
+For this simulation, we assume:
 
+\[
+\lambda = 50 \text{ units/day}
+\]
+
+This model captures random independent customer arrivals commonly observed in retail systems.
+
+\subsubsection{$(s,S)$ Inventory Control Policy}
+
+A continuous-review $(s,S)$ policy is implemented. When the current inventory level $I_t$ falls below reorder point $s$, an order is placed to raise inventory to level $S$:
+
+\[
+\text{If } I_t < s, \quad Q = S - I_t
+\]
+
+where $Q$ is the order quantity.
+
+Simulation parameters:
+
+\[
+s = 100, \quad S = 300
+\]
+
+\subsubsection{Economic Order Quantity (EOQ)}
+
+For baseline comparison, the classical EOQ model is used:
+
+\[
+Q^* = \sqrt{\frac{2DS}{H}}
+\]
+
+where:
+\begin{itemize}
+    \item $D$ = annual demand
+    \item $S$ = ordering cost per order
+    \item $H$ = holding cost per unit per year
+\end{itemize}
+
+Example parameters:
+
+\[
+D = 18{,}250, \quad S = 200, \quad H = 5
+\]
+
+\subsubsection{Lead Time Modeling}
+
+Supplier lead time is stochastic and modeled as:
+
+\[
+L \sim \mathcal{N}(\mu_L, \sigma_L)
+\]
+
+with:
+
+\[
+\mu_L = 7 \text{ days}, \quad \sigma_L = 2 \text{ days}
+\]
+
+This variability introduces uncertainty in replenishment arrival times.
+
+\subsubsection{Cost and Performance Metrics}
+
+Inventory performance is evaluated using:
+
+\[
+\text{Holding Cost} = h \cdot I_t
+\]
+\[
+\text{Ordering Cost} = K \cdot N_{orders}
+\]
+\[
+\text{Shortage Cost} = p \cdot \text{backorders}
+\]
+\[
+\text{Total Cost} = C_h + C_o + C_s
+\]
+
+Service level (fill rate):
+
+\[
+\text{Fill Rate} = 1 - \frac{E[\text{shortages}]}{E[\text{demand}]}
+\]
 
 \section{UML Diagrams}
 
