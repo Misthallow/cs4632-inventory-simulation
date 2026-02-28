@@ -44,13 +44,13 @@ The objective is to evaluate and compare inventory control policies and measure 
 ---
 
 ## Repository Structure
-├── src/ # Python simulation source code
-├── docs/ # UML diagrams and screenshots
-├── main.tex # LaTeX report
-├── references.bib # bibliography
-├── requirements.txt # Python dependencies
-└── README.md
----
+
+src/ – Python simulation source code  
+docs/ – UML diagrams and screenshots  
+main.tex – LaTeX report  
+references.bib – bibliography  
+requirements.txt – dependencies  
+README.md – project documentation  
 
 ## Installation
 
