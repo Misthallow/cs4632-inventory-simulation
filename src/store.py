@@ -8,10 +8,12 @@ class Store:
     def process_demand(self, demand, penalty):
         if demand <= self.inventory:
             self.inventory -= demand
+            return 0
         else:
             shortage = demand - self.inventory
             self.inventory = 0
             self.shortage_cost += shortage * penalty
+            return shortage
 
     def add_inventory(self, qty):
         self.inventory += qty

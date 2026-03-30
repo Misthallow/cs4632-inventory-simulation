@@ -1,35 +1,46 @@
+from simulationengine import SimulationEngine
+from config import get_default_config
 import numpy as np
 import random
-import math
 
-inventory = 200
-s = 100
-S = 300
+base_config = get_default_config()
 
-holding_cost = 2
-ordering_cost = 200
-shortage_cost = 50
+runs = [
+    {"id": "001", "changes": {}},
+    {"id": "002", "changes": {"demand_lambda": 70}},
+    {"id": "003", "changes": {"demand_lambda": 30}},
+    {"id": "004", "changes": {"s": 80}},
+    {"id": "005", "changes": {"s": 120}},
+    {"id": "006", "changes": {"S": 400}},
+    {"id": "007", "changes": {"lead_time_mu": 10}},
+    {"id": "008", "changes": {"lead_time_mu": 4}},
+    {"id": "009", "changes": {"holding_cost": 5}},
+    {"id": "010", "changes": {"shortage_cost": 100}},
+]
 
-total_cost = 0
+for run in runs:
+    config = base_config.copy()
+    config.update(run["changes"])
 
-for day in range(365):
+    # Set seed for reproducibility
+    np.random.seed(config["seed"])
+    random.seed(config["seed"])
 
-    demand = np.random.poisson(50)
+    engine = SimulationEngine(config)
+    total_cost, avg_inventory, service_level = engine.run()
 
-    if demand <= inventory:
-        inventory -= demand
-    else:
-        shortage = demand - inventory
-        inventory = 0
-        total_cost += shortage * shortage_cost
+    run_id = run["id"]
 
-    if inventory < s:
-        order_qty = S - inventory
-        inventory += order_qty
-        total_cost += ordering_cost
+    engine.export_timeseries(f"run_{run_id}_timeseries.csv")
+    engine.export_summary(
+        f"run_{run_id}_summary.json",
+        total_cost,
+        avg_inventory,
+        service_level
+    )
 
-    total_cost += inventory * holding_cost
-
-print("Simulation complete")
-print("Final inventory:", inventory)
-print("Total cost:", total_cost)
+    print(f"Run {run_id} complete")
+    print(f"  Total Cost: {total_cost}")
+    print(f"  Avg Inventory: {avg_inventory}")
+    print(f"  Service Level: {service_level}")
+    print("-" * 40)
