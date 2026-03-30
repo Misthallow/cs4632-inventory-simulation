@@ -1,0 +1,17 @@
+{
+    "total_cost": 880846,
+    "avg_inventory": 48.00821917808219,
+    "service_level": 0.5325443786982249,
+    "parameters": {
+        "days": 365,
+        "demand_lambda": 50,
+        "lead_time_mu": 7,
+        "lead_time_sigma": 2,
+        "s": 100,
+        "S": 300,
+        "holding_cost": 2,
+        "ordering_cost": 200,
+        "shortage_cost": 100,
+        "seed": 42
+    }
+}
